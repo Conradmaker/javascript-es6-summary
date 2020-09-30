@@ -1,1 +1,2 @@
-# javascript-es6-summary
+# Initial page
+
