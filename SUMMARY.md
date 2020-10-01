@@ -1,9 +1,11 @@
 # Table of contents
 
-* [1. Block Scope](README.md)
-* [2.Variables](untitled.md)
-* [3.Template literal](untitled-1.md)
-* [4.default parameter](untitled-2.md)
-* [5.rest parameter](untitled-3.md)
-* [6.Spread operator](untitled-4.md)
+* [ES6](README.md)
+* [1. Block Scope](1.-block-scope.md)
+* [2.Variables](2.variables.md)
+* [3.Template literal](3.template-literal.md)
+* [4.default parameter](4.default-parameter.md)
+* [5.rest parameter](5.rest-parameter.md)
+* [6.Spread operator](6.spread-operator.md)
+* [7.Enhanced object](untitled.md)
 

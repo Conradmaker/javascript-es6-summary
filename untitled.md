@@ -1,462 +1,328 @@
----
-description: 2.Variables
----
+# 7.Enhanced object
 
-# 2.Variables
+이번에는 향상된 객체에 대하여 알아보겠습니다. 
 
-## 1. let
+정확히는 향상된 객체의 기능이라고 해야겠네요. 
+
+## 1. shorthand properties \(프로퍼티 축약\)
 
 ### 1-1. 소개
 
+똑같은 key와 value를 가질때 과거에는 아래와 같이 코드를 적용해줬습니다.
+
 ```javascript
-let a = 1
-function f () {
-  console.log(a, b, c)
-    let b = 2
-    console.log(a, b, c)
-    if (true) {
-        let c = 3
-        console.log(a, b, c)
-    }
-    console.log(a, b, c)
+var x = 10
+var y = 20
+var obj = {
+  x: x,
+  y: y
 }
-f()
 ```
 
-1. a 는 1이며 함수 외부에서 선언했습니다.
-2. 함수 f 가 있고 아래에서 f를 실행했습니다.
-3. 실행한뒤 a,b,c를 출력하라고 합니다. \(line3\)
-   1. 내부에 a가 없기 때문에 외부로찾아가 1이 출력
-   2. b는 hoisting을 했지만, TDZ에 걸려 Reference Error
-   3. c는 없으니 Reference Error
-4. b에 2를 할당한뒤 a,b,c 출력
-   1. a, b 는 각각 1, 2 가 출력 
-   2. c는 없으니 Reference Error
-5. if 문 안에는 c 가 있으니 8번line에서 1,2,3출력
-6. 10번 line에서는 a,b는 1,2 c는 if문 안에 있으니 Reference Error
-
-### 1-2. let 상세
-
-let은 var과 같은 기능을 하지만, block scope의 영향을 받으며, TDZ의 영향도 받습니다. 
-
-### 1\) 재할당 가능
+이제는 이렇게 생략해줘도 자동으로 `x : x;`이렇게 적용된답니다.
 
 ```javascript
-let a = 1
-a = 2
-console.log(a)
-```
-
-### 2\) 반복문 내에서의 함수 실행시
-
-```javascript
-var funcs = []
-for (var i = 0; i < 10; i++) {
-  funcs.push(function () {
-    console.log(i)
-  })
+const x = 10
+const y = 20
+const obj = {
+  x,
+  y
 }
-funcs.forEach(function (f) {
-  f()       //10 이 10 번 출력
-})
 ```
 
-1. funcs배열에는 for문의 실행에 따라 함수 10개가 추가됩니다. 
-2. forEach에는 10번 돌겠죠.
+### 1-2. 상세
 
-하지만 결과가 조금 이상합니다. index값은 0~9인데 왜 10이 10번 나올까요?
+프로퍼티의 key와 value에 할당할 변수명이 동일한 경우 value 생략 가능.
 
-이유는 다음과 같습니다. 
+### 1-3. 활용
 
-배열에는 function\(\){console.log\(i\);}, 가 10개 들어갑니다. 
+#### 1\) 함수에서 객체를 리턴할 때
 
-함수는 만들어 졌지만, 실행은 언제 할까요? -&gt; forEach문을 돌릴때 실행하게 됩니다. 
-
-실행 컨텍스트도 함수를 실행할때 생성됩니다. 
-
-그렇다면 var i는 이미 10번 돌아서 10이 되었기 때문에 10이 10번 출력된 것입니다.
-
-그렇다면 0~9까지 출력되게 만들려면 어떻게 해야 할까요? 
-
-i를 각각 함수내에서만 살아있도록 만들어주면 될 것 같습니다. \(var은 전역으로 올라가기 때문에\)
-
-그래서 아래 코드는 즉시실행함수로 i를 가지고 있도록 넘겨주고 즉시실행함수는 v로 i를 받은뒤 그때 실행하도록 해주는 것입니다. 
+파일명을 받아서 파일명과 확장자를 분리하는 함수입니다. 
 
 ```javascript
-var funcs = []
-for (var i = 0; i < 10; i++) {
-  funcs.push((function (v) {
-    return function () {
-      console.log(v)
-    }
-  })(i))
+const convertExtension = function (fullFileName) {
+  const fullFileNameArr = fullFileName.split('.')
+  const filename = fullFileNameArr[0]
+  const ext = fullFileNameArr[1] && fullFileNameArr[1] === 'png' ? 'jpg' : 'gif'
+  return {
+    filename,
+    ext
+  }
 }
-funcs.forEach(function (f) {
-  f()
-})
+convertExtension('abc.png')
+=============================
+{filename:'abc',ext:'png'}
 ```
 
-아래는 es6의 경우입니다. 
+#### 2\) destructuring assignment
 
-let은 block scope이기 때문에 위와 같은것을 고민할 필요가 없죠? 
+비구조화 할당은 정말 자주 사용되죠. 
 
-이렇게 되면 우리의 고민이 사라지게 된 겁입니다. 
+key명과 똑같은 변수명으로 value를 할당하겠다 이말입니다.
+
+뒤에서 다시 알아볼 것입니다.
 
 ```javascript
-let funcs = []
-for (let i = 0; i < 10; i++) {
-  funcs.push(function () {
-      console.log(i)
-  })
+const {
+  name,
+  age
+} = {
+  name: 'conrad',
+  age: 25
 }
-funcs.forEach(function (f) {
-  f()
-})
+console.log(name, age)
+======================
+'conrad',25
 ```
 
-closure에서 생성된 변수는 영원히 숨쉬기 때문에 우리는 메모리를 아낄수 있는 효과까지 let을 통해 얻을 수 있습니다. 
+## 2. concise methods \(간결한 메소드\)
 
-## 2. const
+### 2-1. 소개
 
-const 는 constant variable의 약자 즉, 상수변수라는 의미입니다. 
+메소드를 축약해서 쓸 수 있습니다. 
 
-상수는 원래부터 상수였을까요?  PI라는 값은 언제부터 3.141592..... 가 되었을까요? 
-
-누군가가 PI가 3.141592...다 라고 했을때 부터겠죠? 
-
-프로그래밍에서 상수도 마찬가지 입니다. 
-
-값이 할당되어야만 상수가 될 수 있는 것이죠!!
-
-### 2-1. const 상세
-
-### 1\) 재할당
-
-```javascript
-const PI = 3.141593
-PI = 3.14  //ERROR
-```
-
-값을 할당하면 바꿀수 없습니다.
-
-### 2\) 최초 선언시 할당하지 않으면
-
-```javascript
-const PI
-PI = 3.14  //ERROR
-```
-
-값이 없는 것이 상수가 될수 있을까요? 절대 안됩니다. 
-
-선언과 동시에 값을 할당해주어야만 하며 재할당을 할 수가 없죠. 
-
-### 3\) 참조타입 데이터의 경우
-
-하지만 참조타입 데이터의 경우에는 조금 다릅니다. 
-
-```javascript
-const OBJ = {
-  prop1 : 1,
-  prop2 : 2
-}
-OBJ.prop1 = 3
-console.log(OBJ.prop1)
-```
-
-위 경우는 OBJ가 상수입니다. 
-
-`OBJ.prop1 = 3` 은 상수 OBJ에 접근한 것이 아닌 OBJ안에있는 prop1이라는 property에 접근한 것입니다.  이 property는 OBJ와는 별개로 다른 공간에 저장이 되어있습니다. 
-
-OBJ는 그 property가 저장된 공간을 참조 즉 , 주소값을 가지고 있는 것입니다. 
-
-쉽게 말하면 OBJ는 property들이 어디 저장되 있는지 주소값을 들고 있는 그 공간을 바라보고 있으며 그 바라보는 공간을 바꿀수가 없지만, OBJ가 바라보는 property주소값이 담겨있는 공간은 상수가 아니기 때문에 값을 바꿀 수 있는 것입니다. 
-
-> 참조형 데이터를 상수변수에 할당할 경우 상수형 데이터 안에있는 property는 상수가 아닌 것입니다.
-
-혹시 참조형 데이터가 저장되는 원리를 모른다면 저번 글을 봐주세요. 
-
-다음 예제입니다. 
-
-```javascript
-const ARR = [0, 1, 2]
-ARR.push(3)   //[0,1,2,3]
-delete ARR[1]  //[0,2,3]
-console.log(ARR)  
-```
-
-즉, ARR안에 있는 property는 바꿀 수 있지만, ARR이 바라보는 주소값을 바꿀수는 없는 것입니다. 
-
-하지만, 내부에 있는 값들도 모두 상수로 만들고 싶을수가 있습니다. 
-
-> 해결방안: `Object.freeze()`, `Object.defineProperty()`
-
-```javascript
-const OBJ = {}
-Object.defineProperty(OBJ, 'prop1', {
-  value : 1,
-  writable: false,
-  configurable: false
-})
-
-const OBJ2 = {
-  prop1 : 1
-}
-Object.freeze(OBJ2)
-```
-
-이런경우 OBJ.prop1 은 얼어버려서 바꿀 수 있습니다. 
-
-하지만 문제점이 있죠. 
-
-> 여전히 남는 문제점: nested Object의 경우... \(객체 안에 객체\)
-
-아래 주석을 잘 따라가며 읽어주세요.
-
-```javascript
-const OBJ = {
-  prop1 : 1,
-  prop2 : [2, 3, 4],
-  prop3 : { a: 1, b: 2 }
-}
-Object.freeze(OBJ) //Prop1,2,3 을 얼립니다.
-OBJ.prop1 = 3      //바꿀수 없습니다.
-//prop2안에 있는 데이터는 참조형 데이터입니다.
-OBJ.prop2.push(5)  //OBJ안에 참조형 데이터는 얼었지만 prop2안에 참조데이터는 안얼었습니다.
-OBJ.prop3.b = 3    //바꿀수 있습니다. 
-console.log(OBJ)
-
-Object.freeze(OBJ.prop2) //그래서 OBJ.prop2의 참조데이터도 얼려버립니다. 
-OBJ.prop2.push(6)   //얼어버려서 넣을 수 없습니다. 
-console.log(OBJ)
-```
-
-객체 안에있는 모든 property를 얼려버리고 싶다면 다음과 같이 해주어야 합니다..^^
-
-1. Object 자체를 얼리고
-2. Object 내부의 property를 순회하며 혹시 참조형이면 1번을 반복한다...
-3. 이걸 재귀라고 합니다. 
-
-이런 것을 바로 DeepFreezing이라고 합니다. 
-
-얕은 복사 깊은 복사의 개념과 같습니다. 
-
-깊은 복사를 해야만 immutable해지기 때문에 아주 화두가 되고 있죠...
-
-최근에는 데이터기반의 프레임워크 React / Vue 등이 있기 때문에 한번 공부해보기를 추천합니다.
-
-### 4\) 반복문 내부에서의 상수
-
-아래 코드를 봐주세요.
+과거에는 getName이라는 메소드를 만들때 아래와 같이 해줬습니다.
 
 ```javascript
 var obj = {
-  prop1: 1,
-  prop2: 2,
-  prop3: 3
-}
-for (const prop in obj) {
-  console.log(prop)
-}
-
-for (const i = 0; i < 5; i++) {
-  console.log(i)
+  name: 'foo',
+  getName: function () { return this.name }
 }
 ```
 
-#### for in 문
-
-const 는 분명 상수인데 반복문 for in 에서 객체 obj를 돌면서 그 prop1~3을 상수 prop에 매번 재할당 할 수 있을까요? 
-
-놀랍게도 for in에서는 됩니다.  \(+ for of 도 됩니다\)
-
- 왜냐하면 for in 내부의 모습이 다음과 비슷하기 때문이죠.
+이제는 아래와 같이 사용할 수 있습니다. **shorthand properties** 와 같은 맥락이죠?
 
 ```javascript
-let keys = Object.keys(obj);
-for(let i = 0; i < keys.length; i++){
-    const prop = obj[keys[i]];
-    console.log(prop);
+const obj = {
+  name: 'foo',
+  getName () { return this.name }
 }
 ```
 
-#### for 문
+다만 차이점이 있습니다. 두가지 방법으로 메소드를 선언해 콘솔로 출력해보면 다음과 같습니다.
 
-for 문은 또 다릅니다.
+![arguments&#xC640; caller&#xC5D0; &#xCC28;&#xC774;&#xAC00; &#xC788;&#xC8E0;.](.gitbook/assets/image%20%282%29.png)
 
-그러니 가장 기본적인 for문에서는 let을 사용해 주어야만 합니다. 
+이 이유는 es6로 넘어오면서 명시적으로 Error를 출력해줘서 디버깅에 유리하도록 해주기 위해 만들어진 기능입니다. 
 
-## 3. 공통사항
+또한 prototype이 빠져있는데 생성자 함수로써의 기능을 없애서 원래의 기능에 맞게만 사용할 수 있으며 함수가 가벼워졌습니다. 
 
-#### 1\) 유효범위
+즉 메소드로서 사용되었을때는 메소드로써의 기능 callback함수로 넘어갔을 경우에는 함수로써의 기능에 집중하는 것입니다. 
 
-유효범위는 block scope내부입니다.
+### 2-2. 상세
+
+#### 1\) `:function` 키워드 제거
+
+#### 2\) `super` 명렁어로 상위 클래스에 접근 가능
+
+prototype channing상에 상위에 있는 클래스에 접근해라 이런 의미이죠.
 
 ```javascript
-{
-  let a = 10
-  {
-    const b = 20
-    console.log(b)
-  }
-  console.log(a)
-  console.log(b)
+const Person = {
+  greeting: function () { return 'hello' }
 }
-console.log(a)
-```
-
-#### 2\) 재선언 \(재정의\)
-
-```javascript
-var a = 0
-var a = 1
-console.log(a)  //1
-
-let b = 2
-let b = 3
-console.log(b) //Error
-
-const c = 4
-const c = 5
-console.log(c) //Error
-
-var d = 4
-let d = 5
-const d = 6
-console.log(d)  //Error
-// 이미 선언된 변수명은 다시 사용될 수 없습니다.
-```
-
-{% hint style="warning" %}
-var과 let을 병행해서 사용하면 속도가 느려지니,
-
-const / let을 쓰거나, var 하나만 사용해야 합니다.
-
-당연히 const / let을 사용하는 것이 좋겠죠?
-{% endhint %}
-
-> 프론트 앤드 개발환경에서는 객체를 주로 다루기 때문에 값 자체의 변경이 필요한 예외적인 경우를 제외하면 const를 사용하는 것이 좋습니다.
-
-참고로 첫번째 var의 경우에는 hoisting되어서 다음과 같은 모습이기 때문에 가능합니다.
-
-```javascript
-var a
-a = 0
-a = 1
-```
-
-#### 3\) 초기화되기 전 호출
-
-```javascript
-{
-  console.log(a) //Error 실제 Hoisting은 됬지만 TDZ
-  let a = 10
-  {
-    console.log(b) //Error 실제 Hoisting은 됬지만 TDZ
-    let b = 20
+const friend = {
+  greeting: function () {
+    return 'hi, ' + super.greeting()
   }
 }
+Object.setPrototypeOf(friend, Person)
+friend.greeting() 
+```
 
-{
-  console.log(a) //Error 실제 Hoisting은 됬지만 TDZ
-  const a = 10
-  {
-    console.log(b) //Error 실제 Hoisting은 됬지만 TDZ
-    const b = 20
+```javascript
+const Person = {
+  greeting () { return 'hello' }
+}
+const friend = {
+  greeting () {
+    return 'hi, ' + super.greeting()
   }
+}
+Object.setPrototypeOf(friend, Person)
+//friend를 instance로 하고 Person을 생성자 함수로 해라. 
+//그러면 friend.__proto__={greeting:function(){}} 안에 들어감
+friend.greeting() //'hi, hello'
+friend.__proto__greeting() //'hello'
+```
+
+#### 3\) `prototype` 프로퍼티가 없음 -&gt; 생성자함수로?
+
+위에서 본 내용입니다.
+
+```javascript
+const Person = {
+  greeting () { return 'hello' }
+}
+const p = new Person.greeting()
+```
+
+#### 4\) 그밖에는 모두 기존 함수/메소드와 동일
+
+```javascript
+const obj = {
+  a () { console.log('obj log') },
+  log () { console.log(this) }
+}
+console.log(obj.a.name)
+setTimeout(obj.a, 1000)
+obj.log()
+obj.log.call([])
+setTimeout(obj.log.bind('haha'), 2000)
+```
+
+## 3. computed property name \(계산된 프로퍼티명\)
+
+### 3-1. 소개
+
+```javascript
+var className = ' Class'
+var obj = {}
+
+obj.'ab cd' = 'AB CD' //SyntaxError
+. 찍고 나면 뒤에 문자열이 올 수 없습니다.
+
+obj = {
+  'ab cd': 'AB CD'  //성공
+}
+
+obj['ab cd'] = 'AB CD' //성공
+
+var obj = {
+  'A' + className: 'A급'  //SyntaxError
+}
+
+obj['A' + className] = 'A급'    //성공
+
+const obj2 = {
+  'ab cd':
 }
 ```
 
-Hoisting이 안되는 것이 아닙니다!  안된 것 처럼 보이는 것이죠!
+규칙이 조금 햇갈리죠?
 
-#### 3\) TDZ \(Temporal Dead Zone, 임시사각지대\)
+기존의 `[]`표기법은 이미 생성된 객체리터럴 안에 프로퍼티 하나를 추가할때 사용했습니다. 
 
-hoisting되어도 아무것도 못하게끔 만들어줍니다. 
+즉 \[\] 를 객체가 완성\(선언\)된 이후에 사용이 되었는데 이제는 선언하는 과정에서도 사용할 수 있게 된것입니다. 
 
 ```javascript
-{
-  let a = 10
-  {
-    console.log(a)
-    let a = 20
-  }
+let suffix = ' name'
+let iu = {
+    ['last'+suffix]: '이',
+    ['first'+suffix]: '지은',
 }
+console.log(iu)
+===========================
+{last name:'이',first name:'지은'}
 ```
 
 ```javascript
-{
-  const a = 10
-  console.log(a)
-  {
-    console.log(a)
-    const a = 20
-    console.log(a)
+const count = (function (c) {
+  return function () {
+    return c++
   }
+})(0)
+var obj = {
+  [`a_${count()}`]:count(),
+  [`a_${count()}`]:count(),
+  [`a_${count()}`]:count()
 }
+console.log(obj)
+==============================
+{a_0:1, a_2:3, a_4:5}
 ```
 
-#### 4\) 전역객체의 프로퍼티?
+1. 즉시실행 함수이며 0 을 넘깁니다. 
+2. c는 처음에 0 인데 호출할때마다 하나씩 올라갑니다.
+
+### 3-2. 상세
+
+#### 1\) 객체 리터럴 선언시 프로퍼티 키값에 대괄호 표기로 접근 가능
+
+#### 2\) 대괄호 내에는 값 또는 식을 넣어 조합할 수 있음 \(문은 안되요!\)
+
+## 4. own property enumeration order \(고정된 프로퍼티 열거 순서\)
 
 ```javascript
-var a = 10
-console.log(window.a)    //10
-console.log(a)    //10
-delete a  //false
-console.log(window.a)  //10
-console.log(a)  //10
+const obj1 = {
+  c: 1,
+  2: 2,
+  a: 3,
+  0: 4,
+  b: 5,
+  1: 6
+}
+const keys1 = []
+for (const key in obj1) {
+  keys1.push(key)
+}
+console.log(keys1) //['0','1','2','c','a','b']
+console.log(Object.keys(obj1)) //['0','1','2','c','a','b']
+console.log(Object.getOwnPropertyNames(obj1)) //['0','1','2','c','a','b']
+//넣은 순서가 바뀌었습니다. 숫자먼저순서로/문자는 순서유지
 
-window.b = 20
-console.log(window.b)
-console.log(b)
-delete b
-console.log(window.b)
-console.log(b)
+=========================================================================
+
+const obj2 = {
+  '02': true,
+  '10': true,
+  '01': true,
+  '2': true,
+}
+const keys2= []
+for(const key in obj2) {
+  keys2.push(key)
+}
+console.log(keys2) //['2','10','02','01'] 뭔가 순서가 이상합니다.
+console.log(Object.keys(obj2))
+console.log(Object.getOwnPropertyNames(obj2))
+console.log(Reflect.ownKeys(obj2))
+// '숫자'에서 숫자인 문자열을 숫자로 인식하기 위해서는 첫글자가 0 이 아니어야 합니다.
+//'02','01'은 문자열로 인식된 것이기 때문에 뒤에 나온 것입니다.
+
+=========================================================================
+
+const obj3 = Object.assign({}, obj1, obj2)
+const keys3= []
+for(const key in obj3) {
+  keys3.push(key)
+}
+console.log(keys3) //['0','1','2','10','c','a','b','02','01']
+console.log(Object.keys(obj3)) //['0','1','2','10','c','a','b','02','01']
+
+//하지만 obj3를 직접 보면 구조는 아래와 같습니다.
+{0:4, 1:6, 2:true, 10:true, c:1, a:3, b:5, 02:true, 01:true ...}
+//즉 보기위해 그냥 obj3를 보면 순서를 따르지 않지만,
+//실제로 개발을 위해 console.log()를 프로그래밍상으로 돌리면 순서를 따르게 되는것입니다.
 ```
 
-전역공간에서 선언한 var 는 전역 변수임과 동시에 전역 객체의 프로퍼티가 됩니다...
+#### 1\) 열거순서는 다음 규칙을 따른다.
 
-그렇게 때문에 삭제가 안되는 것입니다. 
+* **number &rarr string &rarr symbol** 의 순서로 정렬된다.
+* `number` key는 프로퍼티들 중 가장 앞에 위치하며, 오름차순이다.
+* `string` key는 객체에 추가된 당시의 순서를 유지하면서 숫자 뒤에 위치한다.
+* `Symbol` key는 객체에 추가된 당시의 순서를 유지하면서 제일 마지막에 위치한다.
 
-아래 코드를 보세요.
+#### 2\) number\(index\)로 인식하는 key는 다음과 같다.
 
-```javascript
-window.a=10;
-console.log(a) //10
-delete a  //true
-console.log(a , window.a) //Error, undifined
-=================================
-var a =10;
-console.log(a , window.a); //10,10
-delete a //false
-delete window.a //false
-```
+* 0 이상의, 첫째자리가 0이 아닌 수는, 문자열로 입력해도 똑같이 숫자로 인식한다.
+* 첫째자리가 0인 두자리 이상의 숫자는 문자열로 입력해야 하고, 문자열로 인식한다.
+* 음수는 문자열로 입력해야 하고, 문자열로 인식한다.
 
-하.. var 정말 왜그럴까요? 이상한 아이입니다. 
+**∴ 'index'로 인식할 수 있는 경우에 한해서만 작은 수부터 나열한다.**
 
-window.a 로 선언한 변수 즉, 전역객체의 프로퍼티는 삭제가 가능한데 var은 안됩니다. 
+#### 3\) 열거순서를 엄격히 지키는 경우는 다음과 같다.
 
-그래서 전역 변수의 선언을 "최소화" 하고 왠만하면, 함수scope로 감싸주고, 여러가지 안전장치를 마련해야 했습니다. 
+* `Object.getOwnPropertyNames()`
+* `Reflect.ownKeys()`
+* `Object.assign()`
 
-하지만 let const 에는 다 필요 없습니다. 전역공간에서 변수를 선언해도 전역객체의 property에는 들어가지 않습니다. 
+#### 4\) ES5 하위문법인 다음의 경우에는 정합성을 보장하지 않는다.\(브라우저마음\)
 
-```javascript
-let c = 30
-console.log(window.c)  //undifined
-console.log(c)   //30
-delete c //false  window.c가없기 때문에
-console.log(window.c)  //undifined
-console.log(c)   //30
+* `for in`
+* `Object.keys()`
+* `JSON.stringify()`
 
-const d = 40
-console.log(window.d)  //undifined
-console.log(d)   //40
-delete d //false  window.d가없기 때문에
-console.log(window.d)  //undifined
-console.log(d)   //40
-```
-
-> delete명령어 자체가 객체의 property를 지우라는 명령어 입니다. 
->
->  delete b 는 `delete (window).b` 입니다.
-
-자 이제 더더욱 let과 const 를 써야하는 이유가 명확해졌습니다!!
+즉 한마디로 열거순서는 먼저 숫자를 오름차순 다음 문자열을 입력순서. 그다음 심볼 입력순서
 
