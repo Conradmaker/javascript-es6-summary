@@ -1,3 +1,7 @@
+---
+description: 5.rest parameter
+---
+
 # 5.rest parameter
 
 ## 나머지 매개변수

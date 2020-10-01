@@ -1,3 +1,7 @@
+---
+description: 1. Block Scope
+---
+
 # 1. Block Scope
 
 ## 1. Block Scope
