@@ -10,4 +10,5 @@
 * [7.Enhanced object](7.enhanced-object.md)
 * [8.Arrow Function](8.arrow-function.md)
 * [9.Function](untitled.md)
+* [10.Destructuring assignment](10.destructuring-assignment.md)
 
