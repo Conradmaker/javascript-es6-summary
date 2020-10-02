@@ -9,4 +9,5 @@
 * [6.Spread operator](6.spread-operator.md)
 * [7.Enhanced object](7.enhanced-object.md)
 * [8.Arrow Function](8.arrow-function.md)
+* [9.Function](untitled.md)
 
